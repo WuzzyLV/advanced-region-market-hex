@@ -1247,13 +1247,13 @@ public class Messages {
                 field.setAccessible(true);
                 Object parsedOption = cs.get(getSerializedKey(field));
                 if (parsedOption instanceof String) {
-                    parsedOption = ChatColor.translateAlternateColorCodes('&', (String) parsedOption);
+                    parsedOption = ChatColor.translateAlternateColorCodes('&', translateHexColorCodes((String) parsedOption));
 
                 } else if (parsedOption instanceof List<?>) {
                     List<String> parsedOptionList = new ArrayList<>();
                     for (Object listElement : (List<?>) parsedOption) {
                         if (listElement instanceof String) {
-                            parsedOptionList.add(ChatColor.translateAlternateColorCodes('&', (String) listElement));
+                            parsedOptionList.add(ChatColor.translateAlternateColorCodes('&', translateHexColorCodes((String) listElement)));
                         }
                     }
                     parsedOption = parsedOptionList;
@@ -1279,8 +1279,6 @@ public class Messages {
         if (field.getType().isAssignableFrom(String.class)) {
             return getStringList(messageList, x -> x, "\n");
         }
-        //parse hex colors
-        messageList.forEach(Messages::translateHexColorCodes);
 
         return messageList;
     }
