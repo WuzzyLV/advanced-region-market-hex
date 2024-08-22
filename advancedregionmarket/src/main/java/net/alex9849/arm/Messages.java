@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Messages {
     public enum MessageLocale {
@@ -1277,7 +1279,24 @@ public class Messages {
         if (field.getType().isAssignableFrom(String.class)) {
             return getStringList(messageList, x -> x, "\n");
         }
+        //parse hex colors
+        messageList.forEach(Messages::translateHexColorCodes);
+
         return messageList;
+    }
+    private static String translateHexColorCodes(String message){
+        final Pattern hexPattern = Pattern.compile("&#" + "([A-Fa-f0-9]{6})");
+        Matcher matcher = hexPattern.matcher(message);
+        StringBuffer buffer = new StringBuffer(message.length() + 4 * 8);
+        while (matcher.find()){
+            String group = matcher.group(1);
+            matcher.appendReplacement(buffer, ChatColor.COLOR_CHAR + "x"
+                    + ChatColor.COLOR_CHAR + group.charAt(0) + ChatColor.COLOR_CHAR + group.charAt(1)
+                    + ChatColor.COLOR_CHAR + group.charAt(2) + ChatColor.COLOR_CHAR + group.charAt(3)
+                    + ChatColor.COLOR_CHAR + group.charAt(4) + ChatColor.COLOR_CHAR + group.charAt(5)
+            );
+        }
+        return matcher.appendTail(buffer).toString();
     }
 
     private static String getSerializedKey(Field field) {
